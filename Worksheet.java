@@ -53,20 +53,37 @@
 	 
 	 public void makeIt()
 	 {
-		 
+		 String outFileName = new String("Worksheet.txt");
+		 PrintWriter output = null;
+		 File outFile = new File(outFileName);
+			try
+			{
+				output = new PrintWriter(outFile);
+			}
+			catch (IOException e)
+			{
+				System.err.println("\n\n\nERROR: Cannot create " + outFileName + " file.\n\n\n");
+				System.exit(2);
+			}
 	 }
 	 
-	 public askForNumbers()
+	 public void askForNumbers()
+	 {
+		 Scanner in = new Scanner(System.in);
+		 int startNum = 0;
+		 int endNum = 0;
+		 System.out.print("Enter the Start Number: ");
+		 startNum = in.nextInt();
+		 System.out.print("Enter the last Number: ");
+		 endNum= in.nextInt();
+	 }
+	 
+	 public void generateNumbers()
 	 {
 		 
 	 }
 	 
-	 public generateNumbers()
-	 {
-		 
-	 }
-	 
-	 public printWorksheet()
+	 public void 	printWorksheet()
 	 {
 		 
 	 }
