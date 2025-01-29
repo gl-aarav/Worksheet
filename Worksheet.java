@@ -70,69 +70,64 @@ public class Worksheet
 
 	public int askForNumbers()
 	{
-	    Scanner in = new Scanner(System.in);
-	    int startNum = 0;
-	    int endNum = 0;
-	    boolean validInput = false;
-	    
-	    while (!validInput) 
-	    {
-	        System.out.print("Enter the Start Value: ");
-	        startNum = in.nextInt();
-	        System.out.print("Enter the End Value: ");
-	        endNum = in.nextInt();
-	        if (startNum < endNum) 
-	        {
-	            validInput = true;
-	        } 
-	        else 
-	        {
-	            System.out.println("End value must be greater than start value. Please try again.");
-	        }
-	    }
-	    int operation = generateNumbers(startNum, endNum);
-	    return operation;
+		Scanner in = new Scanner(System.in);
+		int startNum = 0;
+		int endNum = 0;
+		boolean validInput = false;
+
+		while (!validInput) 
+		{
+			System.out.print("Enter the Start Value: ");
+			startNum = in.nextInt();
+			System.out.print("Enter the End Value: ");
+			endNum = in.nextInt();
+			if (startNum < endNum) 
+			{
+				validInput = true;
+			} 
+			else 
+			{
+				System.out.println("End value must be greater than start value. Please try again.");
+			}
+		}
+		int operation = generateNumbers(startNum, endNum);
+		return operation;
 	}
 
 
 	public int generateNumbers(int start, int end)
 	{
 		int operation = 0;
-		for (int i = 0; i < firstNumber.length-1; i++)
-	    {
-	        operation = (int)(Math.random() * 2) + 1;  // Randomly generate addition or subtraction for each problem
-	        firstNumber[i] = (int)(Math.random() * (end - start)) + start; 
-	        secondNumber[i] = (int)(Math.random() * (end - start)) + start;
-	        if (operation == 1)
-	            answer[i] = firstNumber[i] - secondNumber[i];
-	        else
-	            answer[i] = firstNumber[i] + secondNumber[i];
-	    }
-	    return operation;
+		for (int i = 0; i < firstNumber.length; i++)
+		{
+			operation = (int)(Math.random() * 2) + 1;  
+			firstNumber[i] = (int)(Math.random() * (end - start)) + start; 
+			secondNumber[i] = (int)(Math.random() * (end - start)) + start;
+			if (operation == 1)
+				answer[i] = firstNumber[i] - secondNumber[i];
+			else
+				answer[i] = firstNumber[i] + secondNumber[i];
+			operation = 0;
+		}
+		return operation;
 	}
 
 
 	public void printWorksheet(PrintWriter output, int operation)
 	{
-		final int problemsPerLine = 5;
 		String operation2 = new String("");
 		if(operation == 1)
 			operation2 = "-";
 		else
 			operation2 = "+";
-		
-		for (int i = 0; i < firstNumber.length-1; i++) 
+
+		for (int i = 1; i <= firstNumber.length; i++) 
 		{
-		    for (int x = 0; x < problemsPerLine; x++) 
-		    {
-		        output.printf("%s", firstNumber[i] + " " + operation2 + " " + secondNumber[i] + " = " + answer[i]);
-		        if (i < firstNumber.length - 1) 
-		        {	
-		            output.print("  ");
-		        }
-		        i++;
-		    }
-		    output.println();
+			if (i%5 != 0)
+				output.printf("%-20s\t\t", firstNumber[i-1] + " " + operation2 + " " + secondNumber[i-1] + " = " + answer[i-1]);
+			else 
+				output.printf("%s\n", firstNumber[i-1] + " " + operation2 + " " + secondNumber[i-1] + " = " + answer[i-1]);
+			System.out.println();
 		}
 
 		output.close();
