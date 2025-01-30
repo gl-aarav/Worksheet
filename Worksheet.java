@@ -35,7 +35,16 @@ public class Worksheet
 
 	public Worksheet()
 	{
-		final int problemNumber = 20;
+		int problemNumber = 0;
+		Scanner in = new Scanner (System.in);
+		System.out.println("\n\n\n");
+		do
+		{
+			System.out.print("Enter the number of problems you want: ");
+			problemNumber = in.nextInt();
+			if (problemNumber <= 0)
+				System.out.println("\nYou did not enter a valid input, enter a number greater than 0.");
+		} while(problemNumber <= 0);
 		firstNumber = new int[problemNumber];
 		secondNumber = new int[problemNumber];
 		answer = new int[problemNumber];
@@ -49,14 +58,15 @@ public class Worksheet
 
 	public void runIt()
 	{
-		PrintWriter output = makeIt();
-		askForNumbers();
-		printWorksheet(output);
+		makeIt();
 	}
 
-	public PrintWriter makeIt()
+	public void makeIt()
 	{
-		String outFileName = new String("Worksheet.txt");
+		Scanner in = new Scanner (System.in);	
+		System.out.print("Enter the name of the file you want: ");
+		String outFileName = in.nextLine();
+		outFileName = outFileName + ".txt";
 		PrintWriter output = null;
 		File outFile = new File(outFileName);
 		try
@@ -68,10 +78,10 @@ public class Worksheet
 			System.err.println("\n\n\nERROR: Cannot create " + outFileName + " file.\n\n\n");
 			System.exit(2);
 		}
-		return output;
+		askForNumbers(output, outFileName);
 	}
 
-	public void askForNumbers()
+	public void askForNumbers(PrintWriter output, String fileName)
 	{
 		Scanner in = new Scanner(System.in);
 		int startNum = 0;
@@ -79,44 +89,41 @@ public class Worksheet
 		boolean validInput = false;
 		String operation = new String("");
 
-		while (!validInput) 
+		System.out.print("\nEnter the Start Value: ");
+		startNum = in.nextInt();
+		System.out.print("Enter the End Value: ");
+		endNum = in.nextInt();
+		in.nextLine();
+
+		do
 		{
-			System.out.print("Enter the Start Value: ");
-			startNum = in.nextInt();
-			System.out.print("Enter the End Value: ");
-			endNum = in.nextInt();
-			do
-			{
-				System.out.print("Enter the operation '+' or '-' or mixed: ");
-				in.nextLine();
-				operation = in.nextLine();
-				if (!operation.equals("-") && !operation.equals("+") && !operation.equalsIgnoreCase("mixed"))
-					System.out.println("You did not enter in the form of '+' or '-'");
-				
-			} while (!operation.equals("-") && !operation.equals("+") && !operation.equalsIgnoreCase("mixed"));
-			
-			if (startNum < endNum) 
-				validInput = true;
-			else 
-				System.out.println("End value must be greater than start value. Please try again.");
-		}
-		generateNumbers(startNum, endNum,operation);
+			System.out.print("Enter the operation '+' or '-' or mixed: ");
+			operation = in.nextLine();
+
+			if (!operation.equals("-") && !operation.equals("+") && !operation.equalsIgnoreCase("mixed"))
+				System.out.println("You did not enter in the form of '+' or '-'");
+
+		} while (!operation.equals("-") && !operation.equals("+") && !operation.equalsIgnoreCase("mixed"));
+
+		System.out.println("Go look at \"" + fileName + "\" to see the worksheet!\n\n\n");
+		generateNumbers(startNum, endNum,operation, output);
 	}
 
 
-	public void generateNumbers(int start, int end,String operation)
+	public void generateNumbers(int start, int end,String operation, PrintWriter output)
 	{
 		String operate2 = new String ("");
+		boolean mixedOrNot = false;
 		for (int i = 0; i < firstNumber.length; i++)
 		{
 			if (operation.equalsIgnoreCase("mixed"))
 			{
 				int operate = (int)(Math.random() * 2);
-				System.out.println(operate);
 				if (operate == 0)
 					operate2 = "-";
 				else
 					operate2 = "+";
+				mixedOrNot = true;
 			}
 			firstNumber[i] = (int)(Math.random() * (end - start)) + start; 
 			secondNumber[i] = (int)(Math.random() * (end - start)) + start;
@@ -125,32 +132,69 @@ public class Worksheet
 			else
 				answer[i] = firstNumber[i] + secondNumber[i];
 		}
+		printWorksheet(output, start, end, mixedOrNot);
 	}
 
 
-	public void printWorksheet(PrintWriter output)
+	public void printWorksheet(PrintWriter output, int start, int end, boolean mix)
 	{
-		output.printf("%100s\n%100s\n\n\n", "Name_______________________","Date________________");
+		output.printf("%115s\n%115s\n\n\n", "Name_______________________","Date________________");
 		String operation = new String("");
-		
-		output.println("Problems starting from " );
+		boolean print = true;
+
 		for (int i = 1; i <= firstNumber.length; i++) 
 		{
-			if (answer[i-1] == firstNumber[i-1] - secondNumber[i-1])
+			if (answer[i-1] == firstNumber[i-1] - secondNumber[i-1] && mix)
+			{
 				operation = "-";
-			else
+				if (print)
+				{
+					output.println("Addition and Subtraction practice using numbers " + start + " to " + end + ".\n\n");
+					print = false;
+				}
+			}
+			else if (answer[i-1] == firstNumber[i-1] + secondNumber[i-1] && mix)
+			{
 				operation = "+";
-				
+				if (print)
+				{
+					output.println("Addition and Subtraction practice using numbers " + start + " to " + end + ".\n\n");
+					print = false;
+				}
+			}
+			else if (answer[i-1] == firstNumber[i-1] + secondNumber[i-1] && !mix)
+			{
+				operation = "+";
+				if (print)
+				{
+					output.println("Addition practice using numbers " + start + " to " + end + ".\n\n");
+					print = false;
+				}
+			}
+			else
+			{
+				operation = "-";
+				if (print)
+				{
+					output.println("Subtraction practice using numbers " + start + " to " + end + ".\n\n");
+					print = false;
+				}
+			}
+
 			if (i%5 != 0)
-				output.printf("%d) %-20s",i,firstNumber[i-1] + " " + operation + " " + secondNumber[i-1] + " = ");
+				output.printf("%2d) %-20s",i,firstNumber[i-1] + " " + operation + " " + secondNumber[i-1] + " = ");
 			else 
-				output.printf("%d) %-20s\n\n\n\n",i,firstNumber[i-1] + " " + operation + " " + secondNumber[i-1] + " = ");
+				output.printf("%2d) %-20s\n\n\n\n\n\n\n",i,firstNumber[i-1] + " " + operation + " " + secondNumber[i-1] + " = ");
 		}
-		
+
 		output.println("\n\n\nAnswer Key:");
 		for (int i = 1; i <= firstNumber.length; i++) 
 		{
-				output.printf("%d) %s\n",i,answer[i-1]);
+
+			if (i%5 != 0)
+				output.printf("%2d) %-20s",i,answer[i-1]);
+			else
+				output.printf("%2d) %-20s\n",i,answer[i-1]);
 		}
 
 		output.close();
